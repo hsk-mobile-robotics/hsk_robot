@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="youbot">
+    <xacro:include filename="youbot_base.xacro" />
+    <xacro:include filename="youbot_lidar.xacro"/>
+    <xacro:include filename="$(find simulation)/youbot_plugins/youbot_lidar_gazebo_plugins.urdf.xacro"/>
+    
+
+    <xacro:include filename="$(find simulation)/youbot_plugins/youbot_base_gazebo_plugins.urdf.xacro"/>
+    
+    <!-- 
+    
+
+    <xacro:include filename="$(find youbot_controller)/src/youbot_arm_gazebo_plugins.urdf.xacro"/>
+      <xacro:include filename="$(find youbot_controller)/src/ros_controller.urdf.xacro"/>
+   <xacro:include filename="youbot_arm.xacro" />
+    -->
+</robot>

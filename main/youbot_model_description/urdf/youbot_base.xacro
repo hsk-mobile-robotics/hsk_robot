@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+   
+    <!-- Material: youbot/Orange -->
+    <material name="youbot/Orange">
+        <receive_shadows>on</receive_shadows>
+        <technique>
+            <pass>
+                <ambient>1.000 0.40 0.000 1.000</ambient>
+                <diffuse>1.000 0.40 0.000 1.000</diffuse>
+                <specular>1.000 0.40 0.000 1.000</specular>
+                <emissive>0.000 0.0 0.000 1.000</emissive>
+                <shading>gouraud</shading>
+            </pass>
+        </technique>
+        <color rgba="1.0 0.4 0.0 1.0" />
+    </material>
+
+    <!-- Material: youbot/DarkGrey -->
+    <material name="youbot/DarkGrey">
+        <receive_shadows>on</receive_shadows>
+        <technique>
+            <pass>
+                <ambient>0.033 0.033 0.033 1.0</ambient>
+                <diffuse>1.000 1.000 1.000 1.0</diffuse>
+                <specular>0.8 0.8 0.8 1</specular>
+                <shading>gouraud</shading>
+            </pass>
+        </technique>
+        <color rgba="0.033 0.033 0.033 1.0" />
+    </material>
+
+    <!-- Material: youbot/Grey -->
+    <material name="youbot/Grey">
+        <receive_shadows>on</receive_shadows>
+        <technique>
+            <pass>
+                <ambient>0.1 0.1 0.1 1.0</ambient>
+                <diffuse>0.7 0.7 0.7 1.0</diffuse>
+                <specular>0.8 0.8 0.8 1</specular>
+            </pass>
+        </technique>
+  
+        <color rgba="0.1 0.1 0.1 1.0" />
+    </material>
+
+    <!-- Youbotbase-->
+
+    <link name="base_footprint">
+    </link>
+    <joint name="base_footprint_joint" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <child link="base_link"/>
+      <parent link="base_footprint"/>
+    </joint>
+
+   <!--  BASE_LINK-->
+
+    <link name="base_link">
+      <inertial>
+        <mass value="19.0"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="5.652232699207" ixy="0" ixz="1.293988226423" iyy="5.669473158652" iyz="0" izz="3.683196351726"/>
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0.0841"/>
+        <geometry>
+          <mesh filename="$(find main)/youbot_model_description/urdf/meshes/youbot_base/base.dae"/>
+      </geometry>
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.0841"/>
+        <geometry>
+          <mesh filename="$(find main)/youbot_model_description/urdf/meshes/youbot_base/base_convex.dae"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="caster_joint_fl" type="fixed">
+      <origin rpy="0 0 0" xyz="0.228 0.158 0.0501"/>
+      <axis xyz="0 0 1"/>
+      <parent link="base_link"/>
+      <child link="caster_link_fl"/>
+      <limit effort="10" velocity="100"/>
+    </joint>
+    <link name="caster_link_fl">
+      <inertial>
+        <mass value="0.1"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.012411765597" ixy="0" ixz="0.00050272983" iyy="0.015218160428" iyz="0" izz="0.011763977943"/>
+      </inertial>
+    </link>
+
+    <!-- WHEEL_LINK_FL-->
+
+    <joint name="wheel_joint_fl" type="continuous">
+      <axis xyz="0 1 0"/>
+      <limit effort="30" velocity="10"/>
+      <dynamics damping="1.0" friction="1.0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <parent link="caster_link_fl"/>
+      <child link="wheel_link_fl"/>
+    </joint>
+    <link name="wheel_link_fl">
+      <inertial>
+        <mass value="1.4"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.012411765597" ixy="0" ixz="0.00050272983" iyy="0.015218160428" iyz="0" izz="0.011763977943"/>
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="$(find main)/youbot_model_description/urdf/meshes/youbot_base/front-left_wheel.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder length="0.05" radius="0.05"/>
+        </geometry>
+      </collision>
+    </link>
+    <joint name="caster_joint_fr" type="fixed">
+      <origin rpy="0 0 0" xyz="0.228 -0.158 0.0501"/>
+      <axis xyz="0 0 1"/>
+      <parent link="base_link"/>
+      <child link="caster_link_fr"/>
+      <limit effort="10" velocity="100"/>
+    </joint>
+    <link name="caster_link_fr">
+      <inertial>
+        <mass value="0.1"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.012411765597" ixy="0" ixz="0.00050272983" iyy="0.015218160428" iyz="0" izz="0.011763977943"/>
+      </inertial>
+    </link>
+
+    <!-- WHEEL_LINK_FR-->
+
+    <joint name="wheel_joint_fr" type="continuous">
+      <axis xyz="0 1 0"/>
+      <limit effort="30" velocity="10"/>
+      <dynamics damping="1.0" friction="1.0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <parent link="caster_link_fr"/>
+      <child link="wheel_link_fr"/>
+    </joint>
+    <link name="wheel_link_fr">
+      <inertial>
+        <mass value="1.4"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.012411765597" ixy="0" ixz="0.00050272983" iyy="0.015218160428" iyz="0" izz="0.011763977943"/>
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename= "$(find main)/youbot_model_description/urdf/meshes/youbot_base/front-right_wheel.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder length="0.05" radius="0.05"/>
+        </geometry>
+      </collision>
+    </link>
+    
+    <joint name="caster_joint_bl" type="fixed">
+      <origin rpy="0 0 0" xyz="-0.228 0.158 0.0501"/>
+      <axis xyz="0 0 1"/>
+      <parent link="base_link"/>
+      <child link="caster_link_bl"/>
+      <limit effort="10" velocity="100"/>
+    </joint>
+    <link name="caster_link_bl">
+      <inertial>
+        <mass value="0.1"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.012411765597" ixy="0.000711733678" ixz="0.00050272983" iyy="0.015218160428" iyz="0.000004273467" izz="0.011763977943"/>
+      </inertial>
+    </link>
+
+    <!-- WHEEL_LINK_BL-->
+
+    <joint name="wheel_joint_bl" type="continuous">
+      <axis xyz="0 1 0"/>
+      <limit effort="30" velocity="10"/>
+      <dynamics damping="1.0" friction="1.0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <parent link="caster_link_bl"/>
+      <child link="wheel_link_bl"/>
+    </joint>
+    <link name="wheel_link_bl">
+      <inertial>
+        <mass value="1.4"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.012411765597" ixy="0.000711733678" ixz="0.00050272983" iyy="0.015218160428" iyz="0.000004273467" izz="0.011763977943"/>
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="$(find main)/youbot_model_description/urdf/meshes/youbot_base/back-left_wheel.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder length="0.05" radius="0.05"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="caster_joint_br" type="fixed">
+      <origin rpy="0 0 0" xyz="-0.228 -0.158 0.0501"/>
+      <axis xyz="0 0 1"/>
+      <parent link="base_link"/>
+      <child link="caster_link_br"/>
+      <limit effort="10" velocity="100"/>
+    </joint>
+    <link name="caster_link_br">
+      <inertial>
+        <mass value="0.1"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.012411765597" ixy="0.000711733678" ixz="0.00050272983" iyy="0.015218160428" iyz="0.000004273467" izz="0.011763977943"/>
+      </inertial>
+    </link>
+
+    <!-- WHEEL_LINK_BR-->
+
+    <joint name="wheel_joint_br" type="continuous">
+      <axis xyz="0 1 0"/>
+      <limit effort="30" velocity="10"/>
+      <dynamics damping="1.0" friction="1.0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <parent link="caster_link_br"/>
+      <child link="wheel_link_br"/>
+    </joint>
+    <link name="wheel_link_br">
+      <inertial>
+        <mass value="1.4"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.012411765597" ixy="0.000711733678" ixz="0.00050272983" iyy="0.015218160428" iyz="0.000004273467" izz="0.011763977943"/>
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="$(find main)/youbot_model_description/urdf/meshes/youbot_base/back-right_wheel.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder length="0.05" radius="0.05"/>
+        </geometry>
+      </collision>
+    </link>
+
+</robot>

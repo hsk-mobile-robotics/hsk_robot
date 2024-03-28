@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+       
+
+    <gazebo>
+      <plugin filename="libgazebo_ros_diff_drive.so" name="DiffDrive"> 
+     <!--  <plugin filename="gz-sim-diff-drive-system" name="DiffDrive">-->
+        <left_joint_1>wheel_joint_fl</left_joint_1>
+        <left_joint>wheel_joint_bl</left_joint>
+        
+        <right_joint_1>wheel_joint_fr</right_joint_1> 
+        <right_joint>wheel_joint_br</right_joint>
+        <wheel_separation>0.3</wheel_separation>
+        <wheel_diameter>0.0475</wheel_diameter>
+
+        <odom_publish_frequency>10</odom_publish_frequency>
+        <robot_base_frame>base_footprint</robot_base_frame>
+        <odometry_frame>odom</odometry_frame>
+
+        <publish_odom>true</publish_odom>
+        <publish_odom_tf>true</publish_odom_tf>
+        <publish_wheel_tf>true</publish_wheel_tf>
+
+ 
+      </plugin> 
+      
+        <plugin name='planar_move'
+              filename='libgazebo_ros_planar_move.so'>
+         <topic>cmd_vel</topic>
+          <update_rate>10</update_rate>
+          <publish_rate>10</publish_rate>
+    
+          <publish_odom>true</publish_odom>
+          <publish_odom_tf>true</publish_odom_tf>
+          <odometyTopic>odom</odometyTopic>
+          <odometryFrame>odom</odometryFrame>
+    
+          <robot_base_frame>base_footprint</robot_base_frame>
+    
+          <covariance_x>0.0001</covariance_x>
+          <covariance_y>0.0001</covariance_y>
+          <covariance_yaw>0.01</covariance_yaw>
+        </plugin>
+      </gazebo>
+<!--
+      <gazebo>
+        <plugin name="gazebo-ros-joint-state-publisher-base"
+                filename="libgazebo-ros-joint-state-publisher.so">
+       
+          <update_rate>10</update_rate>
+          <joint_name>wheel_joint_bl</joint_name>
+          <joint_name>wheel_joint_br</joint_name>
+          <joint_name>wheel_joint_fl</joint_name>
+          <joint_name>wheel_joint_fr</joint_name>
+        </plugin>
+      </gazebo>
+
+      <gazebo reference="wheel_link_fl">
+        <mu1 value="0.001"/>
+        <mu2 value ="0.001"/>
+      </gazebo>
+      <gazebo reference="wheel_link_fr">
+        <mu1 value="0.001"/>
+        <mu2 value ="0.001"/>
+      </gazebo>
+      <gazebo reference="wheel_link_bl">
+        <mu1 value="0.001"/>
+        <mu2 value ="0.001"/>
+      </gazebo>
+      <gazebo reference="wheel_link_br">
+        <mu1 value="0.001"/>
+        <mu2 value ="0.001"/>
+      </gazebo>
+      
+     
+  -->
+   
+      <!-- 
+    <gazebo>
+      <plugin
+             filename="ignition-gazebo-odometry-publisher-system"
+             name="ignition::gazebo::systems::OdometryPublisher">
+             <odom_frame>/model/Youbot/odometry</odom_frame>
+             <robot_base_frame>base_footprint</robot_base_frame>
+         </plugin>
+    </gazebo>
+  
+      --> 
+</robot>
