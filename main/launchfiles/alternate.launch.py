@@ -41,6 +41,8 @@ def generate_launch_description():
     mdoel_xml = model_config.toxml()
     params = {"robot_description": mdoel_xml, "use_sim_time": use_sim_time}
 
+    slam_toolbox_params = os.path.join(get_package_share_directory("main"), "config", "slam_config", "mapper_params_online_async.yaml")
+
     return LaunchDescription([
 
         DeclareLaunchArgument(
@@ -100,17 +102,26 @@ def generate_launch_description():
                 ],
             output="screen"
         ),
+
+        #
+        #Node(
+        #    package = "slam_toolbox",
+        #    executable="async_slam_toolbox_node",
+        #    parameters=[slam_toolbox_params, {"use_sim_time": True}],
+        #)
+
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
                 os.path.join(package_slam, "launch", "online_async_launch.py")
-            ])
+            ]),
+            launch_arguments={"my_parameters":slam_toolbox_params}.items(),
         ),
-       
+      
 
         #IncludeLaunchDescription(
         #    PythonLaunchDescriptionSource([
         #        os.path.join(package_nav, "launch", "navigation_launch.py")
         #    ])
-        #),
+        #)
 #
     ])
