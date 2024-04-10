@@ -1,0 +1,10 @@
+[submodule "navigation2"]
+	path = navigation2
+	url = https://github.com/ros-planning/navigation2.git
+	branch = humble
+[submodule "slam_toolbox"]
+	path = slam_toolbox
+	url = https://github.com/SteveMacenski/slam_toolbox.git
+[submodule "ld08_driver"]
+	path = ld08_driver
+	url = https://github.com/wojciechmadry/ld08_driver
