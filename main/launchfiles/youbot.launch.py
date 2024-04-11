@@ -1,20 +1,7 @@
-# Copyright 2022 Open Source Robotics Foundation, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import os
-
+import xacro
 from ament_index_python.packages import get_package_share_directory
+from launch_ros.actions import Node
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
@@ -23,86 +10,102 @@ from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 
-from launch_ros.actions import Node
 
+MODEL_PACKAGE = "main"
+MODEL_NAME = "youbot.urdf.xacro"
+WORLD_NAME = "model.sdf"
+WORLD_CONFIG = "model.config"
+RVIZ_CONFIG = "config.rviz"
 
 def generate_launch_description():
-    # Configure ROS nodes for launch
 
-    # Setup project paths
-    pkg_youbot_gazebo = get_package_share_directory('youbot_gazebo')
-    pkg_youbot_rviz = get_package_share_directory('youbot_rviz')
-    
-    pkg_youbot_model_description = get_package_share_directory('youbot_model_description')
-    
-    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    # set LaunchConfiguration variables
+    use_sim_time = LaunchConfiguration("use_sim_time")
+    rviz = LaunchConfiguration("rviz")
 
-    # Load the SDF file from "description" package
-    sdf_file  =  os.path.join(pkg_youbot_model_description, 'sdf', 'youbot', 'model.sdf')
-    urdf_file =  os.path.join(pkg_youbot_model_description, 'urdf', 'youbot.urdf.xacro')
-    with open(urdf_file, 'r') as infp:
-        robot_desc = infp.read()
+    # get Packages
+    package_model = get_package_share_directory(MODEL_PACKAGE)
+    package_gazebo = get_package_share_directory("simulation")
+    package_config = get_package_share_directory("main")
+    package_gazebo_ros = get_package_share_directory("gazebo_ros")
+    package_slam = get_package_share_directory("slam_toolbox")
 
-    # Setup to launch the simulator and Gazebo world
-    gz_sim = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),       
-        launch_arguments={'gz_args': PathJoinSubstitution([
-        #pkg_youbot_model_description, urdf_file
-        #pkg_youbot_model_description, sdf_file
-            pkg_youbot_model_description, 'sdf', 'youbotworld.sdf'
-        ])}.items(),
-   )
+    # get Paths
+    model_file = os.path.join(package_model, "youbot_model_description", "urdf", MODEL_NAME)
+    world_file = os.path.join(package_gazebo, "world", "maze", WORLD_NAME)
+    world_config = os.path.join(package_gazebo, "world", "maze", WORLD_CONFIG)
 
-    
+    # convert xacro files to xml
+    model_config = xacro.process_file(model_file)
+    mdoel_xml = model_config.toxml()
+    params = {"robot_description": mdoel_xml, "use_sim_time": use_sim_time}
 
-    # Takes the description and joint angles as inputs and publishes the 3D poses of the robot links
-    robot_state_publisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        output='both',
-        parameters=[
-            {'use_sim_time': True},
-            {'robot_description': robot_desc},
-        ]
-    )
-
-    #joint_state_publisher_gui = Node(
-    # package='joint_state_publisher_gui',
-    # executable='joint_state_publisher_gui',
-    # name='joint_state_publisher_gui',
-    #)
-
-
-
-    # Visualize in RViz
-    rviz = Node(
-       package='rviz2',
-       executable='rviz2',
-      #arguments=['-d', os.path.join(pkg_youbot_rviz, 'config', 'config.rviz')],
-       condition=IfCondition(LaunchConfiguration('rviz'))
-    )
-
-    # Bridge ROS topics and Gazebo messages for establishing communication
-    ############################################################
-    #make a new one
-    bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        parameters=[{
-            'config_file': os.path.join(pkg_youbot_gazebo, 'config', 'youbot_gazebo_bridge.yaml'),
-            'qos_overrides./tf_static.publisher.durability': 'transient_local',
-        }],
-        output='screen'
-    )
+    # get Slam Toolbox Params
+    slam_toolbox_params = os.path.join(get_package_share_directory("main"), "config", "slam_config", "mapper_params_online_async.yaml")
 
     return LaunchDescription([
-        #gz_sim,
-        DeclareLaunchArgument('rviz', default_value='true',
-                              description='Open RViz.'),
-        #bridge,
-        robot_state_publisher,
-       # joint_state_publisher_gui,
-        #rviz
+
+        DeclareLaunchArgument(
+            "use_sim_time",
+            default_value="true",
+            description="true if Simulation is used, false if Robot is used"
+        ),
+
+        DeclareLaunchArgument(
+            "rviz",
+            default_value="true",
+            description="Wheter to start RVIZ or not"
+        ),
+
+        Node(
+            package="robot_state_publisher",
+            executable="robot_state_publisher",
+            name="robot_state_publisher",
+            output="screen",
+            parameters=[params]
+        ),        
+
+        Node(
+            package="rviz2",
+            executable="rviz2",
+            arguments=["-d", os.path.join(package_config, "config","rviz_config", RVIZ_CONFIG)],
+            condition=IfCondition(rviz)
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
+                os.path.join(package_gazebo_ros, "launch", "gazebo.launch.py")
+            ])
+        ),
+
+        Node(
+            package="gazebo_ros",
+            executable="spawn_entity.py",
+            arguments=[
+                "-topic", "robot_description", 
+                "-entity", "Youbot"
+                ],
+            output="screen"
+        ),
+
+        Node(
+            package="gazebo_ros",
+            executable="spawn_entity.py",
+            arguments=[
+                "-entity", "Maze", 
+                "-file", world_file, 
+                "-x", "25.0",
+                "-y", "19.0",
+                "-z", "0.0",
+                ],
+            output="screen"
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
+                os.path.join(package_slam, "launch", "online_async_launch.py")
+            ]),
+            launch_arguments={"my_parameters":slam_toolbox_params}.items(),
+        )
+
     ])
