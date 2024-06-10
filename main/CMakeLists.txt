@@ -24,6 +24,24 @@ install(
 
 install(
   DIRECTORY
+    turtlebot4_description/
+  DESTINATION share/${PROJECT_NAME}/turtlebot4_description
+)
+
+install(
+  DIRECTORY
+    turtlebot4_msgs/
+  DESTINATION share/${PROJECT_NAME}/turtlebot4_msgs
+)
+
+install(
+  DIRECTORY
+    turtlebot4_node/
+  DESTINATION share/${PROJECT_NAME}/turtlebot4_node
+)
+
+install(
+  DIRECTORY
     youbot_model_description/
   DESTINATION share/${PROJECT_NAME}/youbot_model_description
 )
